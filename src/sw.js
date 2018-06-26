@@ -1,18 +1,19 @@
 
 /* This acts has the cache name as well  */
-const appName = 'my-currency-converter-03';
+const appName = 'my-currency-converter-04';
 
 /* List of resources to add to cache */
 const resources = {
     libs: [
-        '/',
+        'index.html',
         'libs/bootstrap.min.css',
         'libs/bootstrap-select.min.css',
         'libs/bootstrap-select.min.js',
         'libs/bootstrap.min.js',
         'libs/jquery.slim.min.js',
         'libs/polyfill.min.js',
-        'libs/popper.min.js'
+        'libs/popper.min.js',
+        'libs/idb.js'
     ],
     app: [
         'css/app.css',
@@ -62,13 +63,19 @@ self.addEventListener('activate', event => {
  * if found return cached item else make a request to the network
  */
 self.addEventListener('fetch', event => {
+    const request = event.request;
+
+    if (request.cache === 'only-if-cached' && request.mode !== 'same-origin') {
+        return;
+    }
+
     event.respondWith(
-        caches.match(event.request)
+        caches.match(request)
         .then(res => {
             if (res) {
                 return res;
             }
-            return fetch(event.request)
+            return fetch(request)
         })
     );
 });

@@ -48,37 +48,66 @@
     <main role="main">
 
         <div class="container">
+
+        <div class="alert " role="alert" id="MssgBox" style="display: none;"></div>
+
         <form id="appForm">
             <div class="row">
-                <div class="col-sm-12">
-                    <h2 id="exrate" class="text-center"> </h2>
+                <div class="col-sm-6">
+                    <!-- <h2  class="text-center"> </h2> -->
+                    <div class="card text-center text-white bg-primary mb-3" style="display: none;">
+                            <div class="card-header"> Exchange Rate </div>
+                            <div class="card-body">
+                                <h5 class="card-title" id="exrate"> </h5>
+                                <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
+                            </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="card text-center text-white bg-primary mb-3" style="display: none;">
+                            <div class="card-header"> Exchange Value </div>
+                            <div class="card-body">
+                                <h5 class="card-title" id="toValue"> </h5>
+                                <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
+                            </div>
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-6">
-                        <select class="selectpicker" data-live-search="true" data-show-subtext="true" id="con1"> </select>
+            <div class="form-row">
+                <div class="col">
+                        <label for="con1">From</label>
+                        <select class="selectpicker form-control" data-live-search="true" data-show-subtext="true" id="con1"> </select>
+                        <small id="emailHelp" class="form-text text-muted"> Convert From This Currency </small>
                 </div>
-                <div class="col-sm-6">
-                        <select class="selectpicker" data-live-search="true" data-show-subtext="true" id="con2"> </select>
+                <div class="col">
+                        <label for="con2">To</label>
+                        <select class="selectpicker form-control" data-live-search="true" data-show-subtext="true" id="con2"> </select>
+                        <small id="emailHelp" class="form-text text-muted"> Convert To This Currency  </small>
                 </div>
             </div>
-            <div class="row">
+            <div class="row padd-2">
                 <div class="col-sm-12"> 
-                        <input type="number" id="fromValue" name="fromValue">
+                        <div class="form-group">
+                                <!-- <label for="exampleInputEmail1">Email address</label> -->
+                                <!-- <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email"> -->
+                                <input type="number" class="form-control" id="fromValue" name="fromValue" placeholder="Enter Value to Convert">
+                                <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+                        </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-12">
-                        <button id="submitBtn"> Convert </button>
+                <div class="col-sm-12 text-center">
+                        <button id="submitBtn" type="submit" class="btn btn-primary"> Convert </button>
                 </div>
             </div>
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-sm-12">
-                        <input type="number" id="toValue" name="toValue">
+                        <input type="number"  name="toValue">
                 </div>
-            </div>
+            </div> -->
         
         </form>
+
         </div>
     </main><!-- /.main -->
 
@@ -87,6 +116,7 @@
     <script src="libs/popper.min.js"></script>
     <script src="libs/bootstrap.min.js"></script>
     <script src="libs/bootstrap-select.min.js"></script>
+    <script src="libs/idb.js"></script>
     <script src="js/app.js"></script>
     <script>
         if ('serviceWorker' in navigator) {

@@ -82,6 +82,8 @@ class App extends ApiMain {
         this.country1 = document.getElementById('con1');
         this.country2 = document.getElementById('con2');
 
+        this.MssgBox = document.getElementById('MssgBox');
+
         // countries
         this.con1 = '';
         this.con2 = '';
@@ -111,12 +113,19 @@ class App extends ApiMain {
      * Register Events
      */
     events() {
-        // this.form.addEventListener('submit', this.formSubmitted.bind(this));
-        // this.theOutput.addEventListener('keydown', this.inputField.bind(this));
+
+        // when the user enters a value in the input field
+        this.theInput.addEventListener('keydown', this.formSubmitted.bind(this));
+        this.theInput.addEventListener('keyup', this.formSubmitted.bind(this));
+
+        // select fields 
         this.country1.addEventListener('change', this.inputField.bind(this));
         this.country2.addEventListener('change', this.inputField.bind(this));
 
+        // convert button
         this.submitBtn.addEventListener('click', this.formSubmitted.bind(this));
+
+        window.addEventListener('offline', this.handleOffline.bind(this));
     }
 
     /**
@@ -125,8 +134,8 @@ class App extends ApiMain {
      * @param {Event} event 
      */
     formSubmitted(event) {  
-        event.preventDefault();
-        //console.log('form data: ', event);
+        event.type == 'click' ? event.preventDefault() : ''
+        // console.log('form data: ', event);
 
         if (!this.con1 && !this.con2) {
             alert('Missing First Field and Second Field');
@@ -137,14 +146,18 @@ class App extends ApiMain {
         } else if (!this.con2) {
             alert('Missing Second Field');
             return;
+        } else if (!this.theInput.value && event.type == 'click') {
+            alert('Missing Value to Convert');
+            return;
         }
 
 
         const value = this.theInput.value;
         this.calRate(value, this.exrate)
         .then(res => {
-            console.log('converted rate', res);
-            this.theOutput.value = res;
+            // console.log('converted rate', res);
+            this.theOutput.innerText = `${this.con2} ${res}`;
+            $(this.theOutput).parent().parent().show(2000);
         })
         .catch(err => this.handleError(err))
     }
@@ -177,6 +190,8 @@ class App extends ApiMain {
                 this.userSelect.exrate = res;
 
                 $('#exrate').html(res);
+                // show the rate box
+                $('#exrate').parent().parent().show(2000);
             })
             .catch(err => this.handleError(err, 'Err getting Exechange Rate'))
         }
@@ -216,7 +231,7 @@ class App extends ApiMain {
      * @param {Object} res JSON Object of Countries 
      */
     setSelectFields(res) {
-        console.log('setting fields');
+        // console.log('setting fields');
 
         let ele = '';
 
@@ -231,6 +246,46 @@ class App extends ApiMain {
 
         $(".selectpicker").selectpicker("refresh");
 
+    }
+
+    handleOffline(event) {
+        const mssg = 'Sorry, You are Offline. <br/> In Offline Mode, you only have access to currencies you have prevously selected';
+    
+        this.message('danger', mssg, 5) 
+    }
+
+    /**
+     * The Message Method.
+     * 
+     * Display an alert message to the user.
+     * 
+     * @example The ClassName may be primary, secondary, success, danger, warning, info, light, dark
+     * 
+     * @param {String} className The Class Name
+     * @param {HTML} mssg The HTML Message to display to the user
+     * @param {Number} duration How Long in Seconds (s) the Message show stay in view
+     */
+    message(className, mssg, duration = 0) {
+
+        if (!$(this.MssgBox).hasClass(`alert-${className}`)) {
+            $(this.MssgBox)
+            .addClass(`alert-${className}`)
+            .html(mssg)
+            .show();
+        } else {
+            $(this.MssgBox)
+            .html(mssg)
+            .show();
+        }
+
+        if (duration && duration != 0) {
+            const timer = setTimeout(() => {
+                $(this.MssgBox)
+                .removeClass(`alert-${className}`)
+                .html('')
+                .hide();
+            }, 1000 * duration);
+        }
     }
 
     /**

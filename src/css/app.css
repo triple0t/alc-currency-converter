@@ -5,3 +5,8 @@ main {
 .cal-icon {
     margin: 10px;
 }
+
+.padd-2 {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
