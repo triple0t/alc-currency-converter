@@ -1,11 +1,11 @@
 
 /* This acts has the cache name as well  */
-const appName = 'my-currency-converter-04';
+const appName = 'my-currency-converter-05';
 
 /* List of resources to add to cache */
 const resources = {
     libs: [
-        'index.html',
+        '/',
         'libs/bootstrap.min.css',
         'libs/bootstrap-select.min.css',
         'libs/bootstrap-select.min.js',

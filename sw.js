@@ -1,11 +1,11 @@
 'use strict';
 
 /* This acts has the cache name as well  */
-var appName = 'my-currency-converter-04';
+var appName = 'my-currency-converter-05';
 
 /* List of resources to add to cache */
 var resources = {
-    libs: ['index.html', 'libs/bootstrap.min.css', 'libs/bootstrap-select.min.css', 'libs/bootstrap-select.min.js', 'libs/bootstrap.min.js', 'libs/jquery.slim.min.js', 'libs/polyfill.min.js', 'libs/popper.min.js', 'libs/idb.js'],
+    libs: ['/', 'libs/bootstrap.min.css', 'libs/bootstrap-select.min.css', 'libs/bootstrap-select.min.js', 'libs/bootstrap.min.js', 'libs/jquery.slim.min.js', 'libs/polyfill.min.js', 'libs/popper.min.js', 'libs/idb.js'],
     app: ['css/app.css', 'js/app.js'],
     api: ['https://free.currencyconverterapi.com/api/v5/countries']
 };
