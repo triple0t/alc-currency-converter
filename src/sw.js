@@ -11,15 +11,12 @@ const resources = {
         'libs/bootstrap-select.min.js',
         'libs/bootstrap.min.js',
         'libs/jquery.slim.min.js',
-        'libs/polyfill.js',
-        'libs/popper.min.js',
-        'libs/setup.js',
-        'libs/system.js'
+        'libs/polyfill.min.js',
+        'libs/popper.min.js'
     ],
     app: [
         'css/app.css',
-        'js/app.js',
-        'js/ApiMain.js'
+        'js/app.js'
     ],
     api: [
         'https://free.currencyconverterapi.com/api/v5/countries'

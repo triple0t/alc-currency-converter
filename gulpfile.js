@@ -3,16 +3,27 @@ var babel = require("gulp-babel");
 var browserSync = require('browser-sync').create();
 var plumber = require('gulp-plumber');
 
-var allTasks = ["copy-html", "js", "css", "libs", "other"];
+var allTasks = ["libs", "copy-html", "js", "css", "other"];
 
 gulp.task('default', allTasks, function () {
   console.log('done');
 });
 
+
+// copy libs
+gulp.task('libs', function(){
+  return gulp.src('src/libs/*.*')
+    .pipe(gulp.dest('libs'))
+});
+
+
+
 // copy html files
 gulp.task('copy-html', function () {
-  return gulp.src('src/**/*.html')
-    .pipe(gulp.dest('dist'));
+  return gulp.src([
+    'src/**/*.html',
+  ])
+    .pipe(gulp.dest(''));
 });
 
 // transpile to es5, copy to dist folder
@@ -23,9 +34,9 @@ gulp.task('js', function() {
         this.emit('end');
       }))                                    
       .pipe(babel(
-        { presets: ['es2015'] }
+        { presets: ['env'] }
       ))   
-      .pipe(gulp.dest('dist/js'));               
+      .pipe(gulp.dest('js'));               
 });
 
 // css files
@@ -35,19 +46,7 @@ gulp.task('css', function() {
         console.error('err with styles', err);
         this.emit('end');
       }))                                       
-      .pipe(gulp.dest('dist/css'));               
-});
-
-// copy systemjs and polyfills
-gulp.task('libs', function(){
-  return gulp.src([
-      'node_modules/systemjs/dist/system.js',
-      'node_modules/babel-polyfill/dist/polyfill.js',
-      'src/setup.js',
-      'src/bootstrap/*.*'
-    ])
-    .pipe(gulp.dest('dist/libs'))
-    .pipe(gulp.dest('src/libs'))
+      .pipe(gulp.dest('css'));               
 });
 
 // copy service worker file
@@ -60,16 +59,16 @@ gulp.task('other', function(){
     this.emit('end');
   }))                                    
   .pipe(babel(
-    { presets: ['es2015'] }
+    { presets: ['env'] }
   ))  
-  .pipe(gulp.dest('dist'))
+  .pipe(gulp.dest(''))
 });
 
 // start the server
 gulp.task('serve', allTasks, function() {
   browserSync.init({
-    server: "dist"
+    server: ""
   });
 
-  gulp.watch("src/**/*.*", allTasks).on('change', browserSync.reload);
+  gulp.watch("src/**/*.*", ["copy-html", "js", "css", "other"]).on('change', browserSync.reload);
 });

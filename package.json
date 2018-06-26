@@ -4,21 +4,19 @@
   "description": "A Basic Currency Converter App built for the ALC 7 days of code",
   "main": "gulpfile.js",
   "scripts": {
-    "serve": "gulp serve"
+    "start": "gulp serve"
   },
   "author": "Oluwaseun triple0t",
   "license": "ISC",
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
-    "babel-preset-es2015": "^6.24.1",
     "browser-sync": "^2.24.5",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.1",
     "gulp-plumber": "^1.2.0"
   },
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
-    "systemjs": "^0.21.4"
+    "babel-polyfill": "^6.26.0"
   }
 }
