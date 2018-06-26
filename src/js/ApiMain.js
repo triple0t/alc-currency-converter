@@ -60,7 +60,8 @@ class ApiMain {
 
         const url = `${this.url + this.api + this.endPoints.convert}?q=${urlQuery}&compact=${mode}`
 
-        return this.request(url);
+        return this.request(url)
+        .then(res => res[urlQuery] )
     }
 
     request(url) {

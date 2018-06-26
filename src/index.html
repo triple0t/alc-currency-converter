@@ -4,14 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>The Currency Converter App</title>
+    <link rel="stylesheet" href="libs/bootstrap.min.css">
+    <!-- <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="libs/bootstrap-select.min.css">
+    <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
- 
-    <h1> Hello World from app </h1>
+
+    <header>
+        <div class="collapse bg-dark" id="navbarHeader">
+            <div class="container">
+            <div class="row">
+                <div class="col-sm-8 col-md-7 py-4">
+                <h4 class="text-white"> The Currency Converter App </h4>
+                <p class="text-muted"> The Currency Converter App is a project built for the Google-Udacity lead ALC </p>
+                </div>
+                <div class="col-sm-4 offset-md-1 py-4">
+                <h4 class="text-white">Contact</h4>
+                <ul class="list-unstyled">
+                    <li><a href="https://twitter.com/triple0t" target="_blank" class="text-white">Follow me on Twitter</a></li>
+                    <li><a href="https://www.instagram.com/triple0t" target="_blank" class="text-white">Like on Instagram</a></li>
+                    <li><a href="#" class="text-white">Email me</a></li>
+                </ul>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="navbar navbar-dark bg-dark box-shadow">
+            <div class="container d-flex justify-content-between">
+            <a href="#" class="navbar-brand d-flex align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"  stroke="currentColor" class="cal-icon"><path d="M13 24h6c2.762 0 5-2.239 5-5v-6h-11v11zm3-7h5v1h-5v-1zm0 2h5v1h-5v-1zm-16 0c0 2.761 2.239 5 5 5h6v-11h-11v6zm3-1h2v-2h1v2h2v1h-2v2h-1v-2h-2v-1zm16-18h-6v11h11v-6c0-2.761-2.238-5-5-5zm-.5 3c.276 0 .5.224.5.5s-.224.5-.5.5-.5-.224-.5-.5.224-.5.5-.5zm0 5c-.276 0-.5-.224-.5-.5s.224-.5.5-.5.5.224.5.5-.224.5-.5.5zm2.5-2h-5v-1h5v1zm-21-1v6h11v-11h-6c-2.761 0-5 2.239-5 5zm6.914-1.622l.708.708-1.415 1.414 1.414 1.414-.707.707-1.414-1.414-1.414 1.414-.708-.707 1.414-1.414-1.414-1.414.707-.707 1.415 1.414 1.414-1.415z"/></svg>
+                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"  class="cal-icon"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-17 5c0-1.654 1.346-3 3-3h6v9h-9v-6zm0 14v-6h9v9h-6c-1.654 0-3-1.346-3-3zm20 0c0 1.654-1.346 3-3 3h-6v-9h9v6zm0-8h-9v-9h6c1.654 0 3 1.346 3 3v6zm-2 6h-5v-1h5v1zm-5-11h5v1h-5v-1zm0 13v-1h5v1h-5zm-6-2v1h-2v2h-1v-2h-2v-1h2v-2h1v2h2zm-1.793-10.5l1.414 1.414-.707.707-1.414-1.414-1.414 1.414-.708-.707 1.414-1.414-1.414-1.414.707-.707 1.415 1.414 1.415-1.415.708.708-1.416 1.414zm9.793-2c0-.276.224-.5.5-.5s.5.224.5.5-.224.5-.5.5-.5-.224-.5-.5zm1 4c0 .276-.224.5-.5.5s-.5-.224-.5-.5.224-.5.5-.5.5.224.5.5z"/></svg> -->
+                <strong> The Currency Converter App </strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            </div>
+        </div>
+    </header>
+
+    <main role="main">
+
+        <div class="container">
+        <form id="appForm">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h2 id="exrate" class="text-center"> </h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                        <select class="selectpicker" data-live-search="true" data-show-subtext="true" id="con1"> </select>
+                </div>
+                <div class="col-sm-6">
+                        <select class="selectpicker" data-live-search="true" data-show-subtext="true" id="con2"> </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12"> 
+                        <input type="number" id="fromValue" name="fromValue">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                        <button id="submitBtn"> Convert </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                        <input type="number" id="toValue" name="toValue">
+                </div>
+            </div>
+        
+        </form>
+        </div>
+    </main><!-- /.main -->
 
     <script src="libs/polyfill.js"></script>
     <script src="libs/system.js"></script>
+    <script src="libs/jquery.slim.min.js"></script>
+    <script src="libs/popper.min.js"></script>
+    <script src="libs/bootstrap.min.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script> -->
+    <script src="libs/bootstrap-select.min.js"></script>
     <script src="libs/setup.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(function() {
+                console.log('service worker registered');
+            })
+        }
+    </script>
 </body>
 </html>
