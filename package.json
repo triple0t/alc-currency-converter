@@ -7,6 +7,11 @@
     "start": "gulp serve"
   },
   "author": "Oluwaseun triple0t",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/triple0t/alc-currency-converter"
+  },
   "license": "ISC",
   "devDependencies": {
     "babel-core": "^6.26.3",
