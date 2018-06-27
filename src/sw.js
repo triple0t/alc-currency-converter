@@ -1,6 +1,8 @@
 
 /* This acts has the cache name as well  */
-const appName = 'my-currency-converter-06';
+const app = 'my-currency-converter-';
+const version = '06.1'
+const appName = `${app + version}`;
 
  const path = (location.hostname === 'triple0t.github.io') ? '/alc-currency-converter/' : '/';
 
@@ -67,13 +69,11 @@ self.addEventListener('activate', event => {
  */
 self.addEventListener('fetch', event => {
     // const request = event.request;
-    const requestUrl = new URL(event.request.url);
+    // const requestUrl = new URL(event.request.url);
 
     /* if (request.cache === 'only-if-cached' && request.mode !== 'same-origin') {
         return;
     } */
-
-    console.log('fetch', event.request, requestUrl, 'sw globe', path);
 
     event.respondWith(
         caches.match(event.request)
