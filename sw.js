@@ -1,12 +1,14 @@
 'use strict';
 
 /* This acts has the cache name as well  */
-var appName = 'my-currency-converter-05';
+var appName = 'my-currency-converter-06';
+
+var path = location.hostname === 'triple0t.github.io' ? '/alc-currency-converter/' : '/';
 
 /* List of resources to add to cache */
 var resources = {
-    libs: ['/', 'libs/bootstrap.min.css', 'libs/bootstrap-select.min.css', 'libs/bootstrap-select.min.js', 'libs/bootstrap.min.js', 'libs/jquery.slim.min.js', 'libs/polyfill.min.js', 'libs/popper.min.js', 'libs/idb.js'],
-    app: ['css/app.css', 'js/app.js'],
+    libs: ['' + path, path + 'index.html', path + 'libs/bootstrap.min.css', path + 'libs/bootstrap-select.min.css', path + 'libs/bootstrap-select.min.js', path + 'libs/bootstrap.min.js', path + 'libs/jquery.slim.min.js', path + 'libs/polyfill.min.js', path + 'libs/popper.min.js', path + 'libs/idb.js'],
+    app: [path + 'css/app.css', path + 'js/app.js'],
     api: ['https://free.currencyconverterapi.com/api/v5/countries']
 };
 
@@ -17,7 +19,7 @@ var resources = {
  */
 self.addEventListener('install', function (event) {
     event.waitUntil(caches.open(appName).then(function (cache) {
-        return cache.addAll(resources.libs.concat(resources.api));
+        return cache.addAll(resources.libs.concat(resources.api, resources.app));
     }).catch(function (err) {
         return handleError(err);
     }).then(function () {
@@ -51,17 +53,17 @@ self.addEventListener('activate', function (event) {
  * if found return cached item else make a request to the network
  */
 self.addEventListener('fetch', function (event) {
-    var request = event.request;
+    // const request = event.request;
+    var requestUrl = new URL(event.request.url);
 
-    if (request.cache === 'only-if-cached' && request.mode !== 'same-origin') {
+    /* if (request.cache === 'only-if-cached' && request.mode !== 'same-origin') {
         return;
-    }
+    } */
 
-    event.respondWith(caches.match(request).then(function (res) {
-        if (res) {
-            return res;
-        }
-        return fetch(request);
+    console.log('fetch', event.request, requestUrl, 'sw globe', path);
+
+    event.respondWith(caches.match(event.request).then(function (res) {
+        return res || fetch(event.request);
     }));
 });
 

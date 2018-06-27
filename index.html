@@ -121,12 +121,12 @@
     <script>
         if ('serviceWorker' in navigator) {
             if (location.hostname === 'triple0t.github.io') {
-                navigator.serviceWorker.register('sw.js', {scope: location.pathname}).then(function() {
-                    console.log('service worker registered');
+                navigator.serviceWorker.register('sw.js', {scope: '/alc-currency-converter/'}).then(function(e) {
+                    console.log('service worker registered for git pages', e, 'path', location.pathname);
                 })
             } else {
-                navigator.serviceWorker.register('sw.js').then(function() {
-                    console.log('service worker registered');
+                navigator.serviceWorker.register('sw.js').then(function(e) {
+                    console.log('service worker registered for others', e);
                 })
             }
         }
