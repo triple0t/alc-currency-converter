@@ -54,12 +54,10 @@
         <form id="appForm">
             <div class="row">
                 <div class="col-sm-6">
-                    <!-- <h2  class="text-center"> </h2> -->
                     <div class="card text-center text-white bg-primary mb-3" style="display: none;">
                             <div class="card-header"> Exchange Rate </div>
                             <div class="card-body">
                                 <h5 class="card-title" id="exrate"> </h5>
-                                <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
                             </div>
                     </div>
                 </div>
@@ -68,7 +66,6 @@
                             <div class="card-header"> Exchange Value </div>
                             <div class="card-body">
                                 <h5 class="card-title" id="toValue"> </h5>
-                                <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
                             </div>
                     </div>
                 </div>
@@ -87,26 +84,43 @@
             </div>
             <div class="row padd-2">
                 <div class="col-sm-12"> 
-                        <div class="form-group">
-                                <!-- <label for="exampleInputEmail1">Email address</label> -->
-                                <!-- <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email"> -->
-                                <input type="number" class="form-control" id="fromValue" name="fromValue" placeholder="Enter Value to Convert">
-                                <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-icon">  </span>
+                            </div>
+                            <input type="number" class="form-control" id="fromValue" name="fromValue" placeholder="Enter Value to Convert">
                         </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-12 text-center">
+                        <button id="swapBtn" class="btn btn-dark" data-placement="top" title="Swrap Between the Selected Currencies"> Swrap </button>
                         <button id="submitBtn" type="submit" class="btn btn-primary"> Convert </button>
                 </div>
             </div>
-            <!-- <div class="row">
-                <div class="col-sm-12">
-                        <input type="number"  name="toValue">
-                </div>
-            </div> -->
         
         </form>
+
+        <div class="row marg-2 ">
+            <div class="col-sm-12 text-center">
+                <p class="lead"> Hello, Here Are Your Convertion So Far </p>
+            </div>
+        </div>
+
+        <table class="table marg-2 table-striped table-hover">
+            <thead class="thead-dark">
+                  <tr>
+                    <th scope="col">Handle</th>
+                    <th scope="col">First Currency</th>
+                    <th scope="col">Second Currency</th>
+                    <th scope="col">Rate </th>
+                    <th scope="col"> </th>
+                  </tr>
+            </thead>
+            <tbody id="tb-body">
+                  
+            </tbody>
+        </table>
 
         </div>
     </main><!-- /.main -->

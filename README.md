@@ -21,6 +21,10 @@ start the app `npm start`
 
 you just run and view the app directly through `index.html`
 
+##
+
+The Source File can be found at `src/`
+
 
 Thanks
 

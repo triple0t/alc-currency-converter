@@ -33,9 +33,7 @@ gulp.task('js', function() {
         console.error('err with scripts', err);
         this.emit('end');
       }))                                    
-      .pipe(babel(
-        { presets: ['env'] }
-      ))   
+      .pipe(babel())   
       .pipe(gulp.dest('js'));               
 });
 
@@ -58,9 +56,7 @@ gulp.task('other', function(){
     console.error('err with other scripts', err);
     this.emit('end');
   }))                                    
-  .pipe(babel(
-    { presets: ['env'] }
-  ))  
+  .pipe(babel())  
   .pipe(gulp.dest(''))
 });
 

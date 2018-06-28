@@ -1,7 +1,7 @@
 
 /* This acts has the cache name as well  */
-const app = 'my-currency-converter-';
-const version = '06.1'
+const app = 'the-currency-converter-app-';
+const version = '01'
 const appName = `${app + version}`;
 
  const path = (location.hostname === 'triple0t.github.io') ? '/alc-currency-converter/' : '/';
@@ -38,6 +38,7 @@ self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(appName)
         .then(cache => cache.addAll(resources.libs.concat(resources.api, resources.app)) )
+        //.then(cache => cache.addAll(resources.libs.concat(resources.api)) )
         .catch(err => handleError(err))
         .then( () => self.skipWaiting() )
     )
@@ -52,7 +53,7 @@ self.addEventListener('activate', event => {
         caches.keys().then(cacheNames => {
             return Promise.all(
               cacheNames.filter(cacheName => {
-                return cacheName.startsWith('my-currency-converter-') &&
+                return cacheName.startsWith(app) &&
                        cacheName != appName;
               }).map(cacheName => caches.delete(cacheName) )
             );
@@ -78,7 +79,7 @@ self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request)
         .then(res => {
-            return res || fetch(event.request);
+            return res || fetch(event.request).catch(err => handleError(err))
         })
     );
 });
@@ -89,5 +90,5 @@ self.addEventListener('fetch', event => {
  * @param {Any} err 
  */
 const handleError = err => {
-    console.error('[sw err] ', err);
+    console.log('[sw err] ', err);
 } 

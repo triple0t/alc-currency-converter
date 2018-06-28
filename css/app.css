@@ -10,3 +10,9 @@ main {
     padding-top: 20px;
     padding-bottom: 20px;
 }
+
+.marg-2 {
+    margin-top: 50px;
+    margin-bottom: 20px;
+    display: none;
+}

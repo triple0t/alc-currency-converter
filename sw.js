@@ -1,8 +1,8 @@
 'use strict';
 
 /* This acts has the cache name as well  */
-var app = 'my-currency-converter-';
-var version = '06.1';
+var app = 'the-currency-converter-app-';
+var version = '01';
 var appName = '' + (app + version);
 
 var path = location.hostname === 'triple0t.github.io' ? '/alc-currency-converter/' : '/';
@@ -22,7 +22,9 @@ var resources = {
 self.addEventListener('install', function (event) {
     event.waitUntil(caches.open(appName).then(function (cache) {
         return cache.addAll(resources.libs.concat(resources.api, resources.app));
-    }).catch(function (err) {
+    })
+    //.then(cache => cache.addAll(resources.libs.concat(resources.api)) )
+    .catch(function (err) {
         return handleError(err);
     }).then(function () {
         return self.skipWaiting();
@@ -36,7 +38,7 @@ self.addEventListener('install', function (event) {
 self.addEventListener('activate', function (event) {
     event.waitUntil(caches.keys().then(function (cacheNames) {
         return Promise.all(cacheNames.filter(function (cacheName) {
-            return cacheName.startsWith('my-currency-converter-') && cacheName != appName;
+            return cacheName.startsWith(app) && cacheName != appName;
         }).map(function (cacheName) {
             return caches.delete(cacheName);
         }));
@@ -63,7 +65,9 @@ self.addEventListener('fetch', function (event) {
     } */
 
     event.respondWith(caches.match(event.request).then(function (res) {
-        return res || fetch(event.request);
+        return res || fetch(event.request).catch(function (err) {
+            return handleError(err);
+        });
     }));
 });
 
@@ -73,5 +77,5 @@ self.addEventListener('fetch', function (event) {
  * @param {Any} err 
  */
 var handleError = function handleError(err) {
-    console.error('[sw err] ', err);
+    console.log('[sw err] ', err);
 };
