@@ -2,7 +2,7 @@
 
 /* This acts has the cache name as well  */
 var app = 'the-currency-converter-app-';
-var version = '01';
+var version = '02';
 var appName = '' + (app + version);
 
 var path = location.hostname === 'triple0t.github.io' ? '/alc-currency-converter/' : '/';
@@ -65,9 +65,7 @@ self.addEventListener('fetch', function (event) {
     } */
 
     event.respondWith(caches.match(event.request).then(function (res) {
-        return res || fetch(event.request).catch(function (err) {
-            return handleError(err);
-        });
+        return res || fetch(event.request);
     }));
 });
 

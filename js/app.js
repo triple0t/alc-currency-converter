@@ -444,8 +444,8 @@ var App = function (_ApiMain) {
             swarpCon: '',
             swarpExrate: 0,
             date: new Date(),
-            con1Data: '',
-            con2Data: ''
+            con1Data: {},
+            con2Data: {}
         };
         return _this10;
     }
@@ -527,7 +527,7 @@ var App = function (_ApiMain) {
                 var value = self.theInput.value;
                 self.calRate(value, self.userSelect.swarpExrate).then(function (res) {
                     // console.log('converted rate', res);
-                    self.theOutput.innerText = (self.userSelect.con1Data.currencySymbol ? self.userSelect.con1Data.currencySymbol : '') + ' ' + res;
+                    self.theOutput.innerText = (self.userSelect.con1Data.currencySymbol ? self.userSelect.con1Data.currencySymbol : '') + ' ' + self.numberWithCommas(res);
                     //$(self.theOutput).parent().parent().show(2000);
                     self.swapBtnSwitch = !self.swapBtnClicked;
                     $('#inputGroup-icon').text('' + (self.userSelect.con2Data.currencySymbol ? self.userSelect.con2Data.currencySymbol : ''));
@@ -540,7 +540,7 @@ var App = function (_ApiMain) {
                 var value = self.theInput.value;
                 this.calRate(value, self.userSelect.exrate).then(function (res) {
                     // console.log('converted rate', res);
-                    self.theOutput.innerText = (self.userSelect.con2Data.currencySymbol ? self.userSelect.con2Data.currencySymbol : '') + ' ' + res;
+                    self.theOutput.innerText = (self.userSelect.con2Data.currencySymbol ? self.userSelect.con2Data.currencySymbol : '') + ' ' + self.numberWithCommas(res);
                     //$(self.theOutput).parent().parent().show(2000);
                     self.swapBtnSwitch = !self.swapBtnClicked;
                     $('#inputGroup-icon').text('' + (self.userSelect.con1Data.currencySymbol ? self.userSelect.con1Data.currencySymbol : ''));
@@ -582,7 +582,7 @@ var App = function (_ApiMain) {
             if (this.exrate && this.exrate != '') {
                 this.calRate(value, this.exrate).then(function (res) {
                     // console.log('converted rate', res);
-                    _this11.theOutput.innerText = (_this11.userSelect.con2Data.currencySymbol ? _this11.userSelect.con2Data.currencySymbol : '') + ' ' + res;
+                    _this11.theOutput.innerText = (_this11.userSelect.con2Data.currencySymbol ? _this11.userSelect.con2Data.currencySymbol : '') + ' ' + _this11.numberWithCommas(res);
                     $(_this11.theOutput).parent().parent().show(2000);
 
                     $('#inputGroup-icon').text('' + (_this11.userSelect.con1Data.currencySymbol ? _this11.userSelect.con1Data.currencySymbol : ''));
@@ -648,7 +648,7 @@ var App = function (_ApiMain) {
                                 this.userSelect.con2Data = _context.sent;
 
 
-                                if (this.userSelect.con1Data && this.userSelect.con2Data) {
+                                if (Object.keys(this.userSelect.con1Data).length != 0 && Object.keys(this.userSelect.con2Data).length != 0) {
 
                                     this.userSelect.con1 = this.userSelect.con1Data.currencyId;
                                     this.userSelect.con2 = this.userSelect.con2Data.currencyId;
@@ -713,7 +713,12 @@ var App = function (_ApiMain) {
 
             var con = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
+            // show loader
+            $('.marg-3').show();
+
             this.getRate(this.userSelect.con1, this.userSelect.con2).then(function (res) {
+                $('.marg-3').hide();
+
                 _this13.exrate = parseFloat(res.toFixed(4));
 
                 _this13.userSelect.exrate = _this13.exrate;
@@ -721,7 +726,10 @@ var App = function (_ApiMain) {
                 var exe = 1 / _this13.exrate;
                 _this13.userSelect.swarpExrate = parseFloat(exe.toFixed(4));
 
-                _this13.db.addItem(_this13.userSelect, _this13.db.user);
+                _this13.db.addItem(_this13.userSelect, _this13.db.user).then(function (res) {
+                    // regenrate the table
+                    _this13.createTable();
+                });
 
                 //console.log('new user data', this.userSelect);
 
@@ -729,6 +737,7 @@ var App = function (_ApiMain) {
                 // show the rate box
                 $('#exrate').parent().parent().show(2000);
             }).catch(function (err) {
+                $('.marg-3').hide();
                 // fallback. if currency exist in db but fetch failed i.e internet reasons, return old data
                 if (con && con != '') {
                     _this13.exrate = parseFloat(con.exrate.toFixed(4));
@@ -761,6 +770,18 @@ var App = function (_ApiMain) {
         }
 
         /**
+         * Add commas to the numbers
+         * 
+         * @param {Number} number 
+         */
+
+    }, {
+        key: 'numberWithCommas',
+        value: function numberWithCommas(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        /**
          * Calculate the Exchange Rate 
          * 
          * @param {number} fromValue The Value Entered by the User.  
@@ -788,19 +809,27 @@ var App = function (_ApiMain) {
         value: function getCountry() {
             var _this14 = this;
 
+            // show the loader
+            $('.marg-3').show();
+
             this.db.getAllItemsInATable(this.db.countries).then(function (res) {
                 if (res && res.length !== 0) {
+                    $('.marg-3').hide();
                     // we have items in database. return to the user
                     _this14.setSelectFields(res, 2);
                 } else {
+                    $('.marg-3').show();
                     // we dont have any items in the database, make http request to get one
                     _this14.getAllCountries().then(function (res) {
+                        $('.marg-3').hide();
                         _this14.setSelectFields(res, 1);
                     }).catch(function (err) {
-                        return _this14.handleError(err, 'Err getting Countries');
+                        $('.marg-3').hide();
+                        _this14.handleError(err, 'Err getting Countries');
                     });
                 }
             }).catch(function (err) {
+                $('.marg-3').hide();
                 _this14.handleError(err, 'Err getting Items from DB');
             });
         }
@@ -891,7 +920,7 @@ var App = function (_ApiMain) {
 
                             // save in array to add to DOM
                             //ele += `<option value="${item.id}" data-subtext="${item.currencyName}">${item.name} (${item.currencyId})</option>`; 
-                            ele += '  \n                    <tr>\n                        <th scope="row"> ' + item.con + ' </th>\n                        <td> ' + item.con1 + ' </td>\n                        <td> ' + item.con2 + ' </td>\n                        <td> ' + item.exrate + ' </td>\n                        <td> <a href="#" class="btn btn-primary usenowBtn" \n                        data-item-con="' + item.con + '" \n                        data-item-con1="' + item.con1 + '" \n                        data-item-con2="' + item.con2 + '" \n                        data-item-exrate="' + item.exrate + '"\n                        > Use Now </a> </td>\n                    </tr>\n                    ';
+                            ele += '  \n                    <tr>\n                        <th scope="row"> ' + item.con + ' </th>\n                        <td> ' + item.con1 + ' </td>\n                        <td> ' + item.con2 + ' </td>\n                        <td> ' + item.exrate + ' </td>\n                        <td> ' + (_this15.checkForAnHour(item.date) ? 'True' : 'False') + ' </td>\n                        <td> <a href="#" class="btn btn-primary usenowBtn" \n                        data-item-con="' + item.con + '" \n                        data-item-con1="' + item.con1 + '" \n                        data-item-con2="' + item.con2 + '" \n                        data-item-exrate="' + item.exrate + '"\n                        data-item-swarpExrate="' + item.swarpExrate + '"\n                        data-item-user1symbol="' + item.con1Data.currencySymbol + '"\n                        data-item-user2symbol="' + item.con2Data.currencySymbol + '"\n                        > Use Now </a> </td>\n                    </tr>\n                    <tr>\n                        <th scope="row"> ' + item.swarpCon + ' </th>\n                        <td> ' + item.con2 + ' </td>\n                        <td> ' + item.con1 + ' </td>\n                        <td> ' + item.swarpExrate + ' </td>\n                        <td> ' + (_this15.checkForAnHour(item.date) ? 'True' : 'False') + ' </td>\n                        <td> <a href="#" class="btn btn-primary usenowBtn" \n                        data-item-con="' + item.swarpCon + '" \n                        data-item-con1="' + item.con2 + '" \n                        data-item-con2="' + item.con1 + '" \n                        data-item-exrate="' + item.swarpExrate + '"\n                        data-item-swarpExrate="' + item.exrate + '"\n                        data-item-user1symbol="' + item.con2Data.currencySymbol + '"\n                        data-item-user2symbol="' + item.con1Data.currencySymbol + '"\n                        > Use Now </a> </td>\n                    </tr>\n                    ';
                         }
                     } catch (err) {
                         _didIteratorError2 = true;
@@ -919,12 +948,17 @@ var App = function (_ApiMain) {
     }, {
         key: 'HandleuseNowClick',
         value: function HandleuseNowClick(event) {
-            //console.log('use now btn clicked', event.currentTarget.dataset);
+            // console.log('use now btn clicked', event.currentTarget.dataset);
             var data = event.currentTarget.dataset;
 
             this.exrate = data.itemExrate;
             this.con1 = data.itemCon1;
             this.con2 = data.itemCon2;
+
+            this.userSelect.exrate = this.exrate;
+            this.userSelect.swarpExrate = data.itemSwarpexrate;
+            this.userSelect.con2Data.currencySymbol = data.itemUser2symbol;
+            this.userSelect.con1Data.currencySymbol = data.itemUser1symbol;
 
             //console.log(this.exrate, this.con1, this.con2);
             $('#exrate').html(this.exrate);

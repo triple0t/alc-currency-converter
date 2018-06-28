@@ -365,8 +365,8 @@ class App extends ApiMain {
             swarpCon: '',
             swarpExrate: 0,
             date: new Date(),
-            con1Data: '',
-            con2Data: ''
+            con1Data: {},
+            con2Data: {}
         }
     }
 
@@ -438,7 +438,7 @@ class App extends ApiMain {
             self.calRate(value, self.userSelect.swarpExrate)
             .then(res => {
                 // console.log('converted rate', res);
-                self.theOutput.innerText = `${self.userSelect.con1Data.currencySymbol ? self.userSelect.con1Data.currencySymbol : ''} ${res}`;
+                self.theOutput.innerText = `${self.userSelect.con1Data.currencySymbol ? self.userSelect.con1Data.currencySymbol : ''} ${self.numberWithCommas(res)}`;
                 //$(self.theOutput).parent().parent().show(2000);
                 self.swapBtnSwitch = !self.swapBtnClicked;
                 $('#inputGroup-icon').text(`${self.userSelect.con2Data.currencySymbol ? self.userSelect.con2Data.currencySymbol : '' }`);
@@ -451,7 +451,7 @@ class App extends ApiMain {
             this.calRate(value, self.userSelect.exrate)
             .then(res => {
                 // console.log('converted rate', res);
-                self.theOutput.innerText = `${self.userSelect.con2Data.currencySymbol ? self.userSelect.con2Data.currencySymbol : ''} ${res}`;
+                self.theOutput.innerText = `${self.userSelect.con2Data.currencySymbol ? self.userSelect.con2Data.currencySymbol : ''} ${self.numberWithCommas(res)}`;
                 //$(self.theOutput).parent().parent().show(2000);
                 self.swapBtnSwitch = !self.swapBtnClicked;
                 $('#inputGroup-icon').text(`${self.userSelect.con1Data.currencySymbol ? self.userSelect.con1Data.currencySymbol : ''}`);
@@ -490,7 +490,7 @@ class App extends ApiMain {
             this.calRate(value, this.exrate)
             .then(res => {
                 // console.log('converted rate', res);
-                this.theOutput.innerText = `${this.userSelect.con2Data.currencySymbol ? this.userSelect.con2Data.currencySymbol : ''} ${res}`;
+                this.theOutput.innerText = `${this.userSelect.con2Data.currencySymbol ? this.userSelect.con2Data.currencySymbol : ''} ${this.numberWithCommas(res)}`;
                 $(this.theOutput).parent().parent().show(2000);
 
                 $('#inputGroup-icon').text(`${this.userSelect.con1Data.currencySymbol ? this.userSelect.con1Data.currencySymbol : ''}`); 
@@ -535,7 +535,7 @@ class App extends ApiMain {
             this.userSelect.con1Data = await this.db.getItem(this.con1, this.db.countries);
             this.userSelect.con2Data = await this.db.getItem(this.con2, this.db.countries);
 
-            if (this.userSelect.con1Data && this.userSelect.con2Data) {
+            if (Object.keys(this.userSelect.con1Data).length != 0 && Object.keys(this.userSelect.con2Data).length != 0) {
                 
                 this.userSelect.con1 = this.userSelect.con1Data.currencyId;
                 this.userSelect.con2 = this.userSelect.con2Data.currencyId;
@@ -583,8 +583,13 @@ class App extends ApiMain {
     }
 
     getLastestCurrency(con = '') {
+        // show loader
+        $('.marg-3').show();
+
         this.getRate(this.userSelect.con1, this.userSelect.con2)
         .then(res => {
+            $('.marg-3').hide();
+
             this.exrate = parseFloat(res.toFixed(4));
 
             this.userSelect.exrate = this.exrate;
@@ -592,7 +597,10 @@ class App extends ApiMain {
             const exe = 1 / this.exrate;
             this.userSelect.swarpExrate = parseFloat(exe.toFixed(4))
 
-            this.db.addItem(this.userSelect, this.db.user);
+            this.db.addItem(this.userSelect, this.db.user).then(res => {
+                // regenrate the table
+                this.createTable();
+            })
 
             //console.log('new user data', this.userSelect);
 
@@ -601,6 +609,7 @@ class App extends ApiMain {
             $('#exrate').parent().parent().show(2000);
         })
         .catch(err => {
+            $('.marg-3').hide();
             // fallback. if currency exist in db but fetch failed i.e internet reasons, return old data
             if (con && con != '') {
                 this.exrate = parseFloat(con.exrate.toFixed(4));
@@ -630,6 +639,15 @@ class App extends ApiMain {
     }
 
     /**
+     * Add commas to the numbers
+     * 
+     * @param {Number} number 
+     */
+    numberWithCommas(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    /**
      * Calculate the Exchange Rate 
      * 
      * @param {number} fromValue The Value Entered by the User.  
@@ -649,21 +667,31 @@ class App extends ApiMain {
      * Make an Api Request to get All the Countries
      */
     getCountry() {
+        // show the loader
+        $('.marg-3').show();
+
         this.db.getAllItemsInATable(this.db.countries)
         .then(res => {
             if (res && res.length !== 0) {
+                $('.marg-3').hide();
                 // we have items in database. return to the user
                 this.setSelectFields(res, 2); 
             } else {
+                $('.marg-3').show();
                 // we dont have any items in the database, make http request to get one
                 this.getAllCountries()
                 .then(res => {
+                    $('.marg-3').hide();
                     this.setSelectFields(res, 1);   
                 })
-                .catch(err => this.handleError(err, 'Err getting Countries'))
+                .catch(err => {
+                    $('.marg-3').hide();
+                    this.handleError(err, 'Err getting Countries')
+                })
             }
         })
         .catch(err => {
+            $('.marg-3').hide();
             this.handleError(err, 'Err getting Items from DB');
         })
     }
@@ -729,11 +757,31 @@ class App extends ApiMain {
                         <td> ${item.con1} </td>
                         <td> ${item.con2} </td>
                         <td> ${item.exrate} </td>
+                        <td> ${this.checkForAnHour(item.date) ? 'True' : 'False' } </td>
                         <td> <a href="#" class="btn btn-primary usenowBtn" 
                         data-item-con="${item.con}" 
                         data-item-con1="${item.con1}" 
                         data-item-con2="${item.con2}" 
                         data-item-exrate="${item.exrate}"
+                        data-item-swarpExrate="${item.swarpExrate}"
+                        data-item-user1symbol="${item.con1Data.currencySymbol}"
+                        data-item-user2symbol="${item.con2Data.currencySymbol}"
+                        > Use Now </a> </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"> ${item.swarpCon} </th>
+                        <td> ${item.con2} </td>
+                        <td> ${item.con1} </td>
+                        <td> ${item.swarpExrate} </td>
+                        <td> ${this.checkForAnHour(item.date) ? 'True' : 'False' } </td>
+                        <td> <a href="#" class="btn btn-primary usenowBtn" 
+                        data-item-con="${item.swarpCon}" 
+                        data-item-con1="${item.con2}" 
+                        data-item-con2="${item.con1}" 
+                        data-item-exrate="${item.swarpExrate}"
+                        data-item-swarpExrate="${item.exrate}"
+                        data-item-user1symbol="${item.con2Data.currencySymbol}"
+                        data-item-user2symbol="${item.con1Data.currencySymbol}"
                         > Use Now </a> </td>
                     </tr>
                     `
@@ -749,12 +797,17 @@ class App extends ApiMain {
     }
 
     HandleuseNowClick(event) {
-        //console.log('use now btn clicked', event.currentTarget.dataset);
+        // console.log('use now btn clicked', event.currentTarget.dataset);
         const data = event.currentTarget.dataset;
 
         this.exrate = data.itemExrate;
         this.con1 = data.itemCon1;
         this.con2 = data.itemCon2;
+
+        this.userSelect.exrate = this.exrate;
+        this.userSelect.swarpExrate = data.itemSwarpexrate;
+        this.userSelect.con2Data.currencySymbol = data.itemUser2symbol;
+        this.userSelect.con1Data.currencySymbol = data.itemUser1symbol
 
         //console.log(this.exrate, this.con1, this.con2);
         $('#exrate').html(this.exrate);

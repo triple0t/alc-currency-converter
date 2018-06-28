@@ -1,7 +1,7 @@
 
 /* This acts has the cache name as well  */
 const app = 'the-currency-converter-app-';
-const version = '01'
+const version = '02'
 const appName = `${app + version}`;
 
  const path = (location.hostname === 'triple0t.github.io') ? '/alc-currency-converter/' : '/';
@@ -79,7 +79,7 @@ self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request)
         .then(res => {
-            return res || fetch(event.request).catch(err => handleError(err))
+            return res || fetch(event.request)
         })
     );
 });
