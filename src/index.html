@@ -82,6 +82,27 @@
            </div>
        </div>
 
+        <div class="modal fade" tabindex="-1" id="cc-modal" role="dialog">
+            <div class="modal-dialog  modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"> Modal title </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary action-modal">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <form id="appForm">
             <div class="row">
                 <div class="col-sm-6">
@@ -105,12 +126,12 @@
                 <div class="col">
                         <label for="con1">From</label>
                         <select class="selectpicker form-control" data-live-search="true" data-show-subtext="true" id="con1"> </select>
-                        <small id="emailHelp" class="form-text text-muted"> Convert From This Currency </small>
+                        <small class="form-text text-muted"> Convert From This Currency </small>
                 </div>
                 <div class="col">
                         <label for="con2">To</label>
                         <select class="selectpicker form-control" data-live-search="true" data-show-subtext="true" id="con2"> </select>
-                        <small id="emailHelp" class="form-text text-muted"> Convert To This Currency  </small>
+                        <small class="form-text text-muted"> Convert To This Currency  </small>
                 </div>
             </div>
             <div class="row padd-2">
@@ -134,7 +155,7 @@
 
         <div class="row marg-2 ">
             <div class="col-sm-12 text-center">
-                <p class="lead"> Hello, Here Are Your Convertions So Far </p>
+                <p class="lead"> Hello <span id="app-user"> </span>, Here Are Your Convertions So Far </p>
             </div>
         </div>
 

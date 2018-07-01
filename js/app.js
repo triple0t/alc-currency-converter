@@ -358,12 +358,8 @@ var AppDb = function () {
     }, {
         key: 'deleteIteminTable',
         value: function deleteIteminTable(id, table) {
-            var _this8 = this;
-
-            return new Promise(function (resolve, reject) {
-                _this8.dbPromise.then(function (db) {
-                    return db.transaction(table, 'readwrite').objectStore(table).delete(id);
-                });
+            return this.dbPromise.then(function (db) {
+                return db.transaction(table, 'readwrite').objectStore(table).delete(id);
             });
         }
 
@@ -383,12 +379,8 @@ var AppDb = function () {
     }, {
         key: 'clearAllTableItems',
         value: function clearAllTableItems(table) {
-            var _this9 = this;
-
-            return new Promise(function (resolve, reject) {
-                _this9.dbPromise.then(function (db) {
-                    return db.transaction(table, 'readwrite').objectStore(table).clear();
-                });
+            return this.dbPromise.then(function (db) {
+                return db.transaction(table, 'readwrite').objectStore(table).clear();
             });
         }
     }]);
@@ -408,34 +400,34 @@ var App = function (_ApiMain) {
         _classCallCheck(this, App);
 
         // create an instance of the DB Class
-        var _this10 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
+        var _this8 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
 
-        _this10.db = new AppDb();
+        _this8.db = new AppDb();
 
         //this.form = document.getElementById('appForm');
-        _this10.submitBtn = document.getElementById('submitBtn');
-        _this10.swapBtn = document.getElementById('swapBtn');
-        _this10.swapBtnSwitch = false;
+        _this8.submitBtn = document.getElementById('submitBtn');
+        _this8.swapBtn = document.getElementById('swapBtn');
+        _this8.swapBtnSwitch = false;
 
-        _this10.theInput = document.getElementById('fromValue');
-        _this10.theOutput = document.getElementById('toValue');
+        _this8.theInput = document.getElementById('fromValue');
+        _this8.theOutput = document.getElementById('toValue');
 
-        _this10.country1 = document.getElementById('con1');
-        _this10.country2 = document.getElementById('con2');
+        _this8.country1 = document.getElementById('con1');
+        _this8.country2 = document.getElementById('con2');
 
-        _this10.MssgBox = document.getElementById('MssgBox');
+        _this8.MssgBox = document.getElementById('MssgBox');
 
         // this.usenowBtn = document.querySelectorAll('.usenowBtn');
 
         // countries
-        _this10.con1 = '';
-        _this10.con2 = '';
+        _this8.con1 = '';
+        _this8.con2 = '';
 
         // convertion rate
-        _this10.exrate;
+        _this8.exrate;
 
         // user selection
-        _this10.userSelect = {
+        _this8.userSelect = {
             con1: '',
             con2: '',
             exrate: 0,
@@ -447,7 +439,7 @@ var App = function (_ApiMain) {
             con1Data: {},
             con2Data: {}
         };
-        return _this10;
+        return _this8;
     }
 
     /**
@@ -462,6 +454,7 @@ var App = function (_ApiMain) {
             $('.selectpicker').selectpicker();
             this.getCountry();
             this.createTable();
+            this.checkUser();
         }
 
         /**
@@ -486,10 +479,41 @@ var App = function (_ApiMain) {
             this.swapBtn.addEventListener('click', this.swapBtnClicked.bind(this));
 
             window.addEventListener('offline', this.handleOffline.bind(this));
+            window.addEventListener('online', this.handleOnline.bind(this));
 
             // this.usenowBtn.addEventListener('click', this.HandleuseNowClick.bind(this));
             $("#tb-body").on('click', '.usenowBtn', this.HandleuseNowClick.bind(this));
             $("#tb-body").on('click', '.renewBtn', this.HandleRenewClick.bind(this));
+            $("#tb-body").on('click', '.deleteBtn', this.HandleDeleteClick.bind(this));
+        }
+    }, {
+        key: 'checkUser',
+        value: function checkUser() {
+            if (!localStorage.getItem('cc-name')) {
+
+                var title = 'Hello First Time User';
+                var mssg = '\n                <form class="cc-name">\n                    <h5> Hello. we can see that this is the first time you are using this App. kindly provide your name </h5>\n                    <div class="form-group">\n                        <label for="recipient-name" class="col-form-label">Please Enter Your Name</label>\n                        <input type="text" class="form-control" id="recipient-name">\n                    </div>\n                </form>\n            ';
+                var btn = [{
+                    name: 'No Thanks',
+                    callback: function callback(e) {
+                        localStorage.setItem('cc-name', 'none');
+                    }
+                }, {
+                    name: 'Alright',
+                    callback: function callback(e) {
+                        // mouse event / currentTarget/ .modal-footer parentElement /.modal-body previousElementSibling /form firstElementChild / div.form-group / input#recipient-name.form-control
+                        var ele = e.currentTarget.parentElement.previousElementSibling.firstElementChild.lastElementChild.lastElementChild.value;
+                        // console.log('user details', ele);
+                        localStorage.setItem('cc-name', ele);
+                        $('#cc-modal').modal('hide');
+                    }
+                }];
+                this.modalControl(mssg, title, btn);
+            } else {
+                var user = localStorage.getItem('cc-name');
+                this.userSelect.name = user;
+                this.userSelect.name != 'none' ? $('#app-user').html(this.userSelect.name) : '';
+            }
         }
 
         /**
@@ -506,19 +530,19 @@ var App = function (_ApiMain) {
             event.preventDefault();
 
             if (!this.con1 && !this.con2) {
-                alert('Missing First Field and Second Field');
+                this.modalControl('Please Select the Currency you want to Convert From and To', 'Missing First Field and Second Field', [{ name: 'Try Again' }]);
                 return;
             } else if (!this.con1) {
-                alert('Missing First Field');
+                this.modalControl('Please Select the First Currency', 'Missing First Field', [{ name: 'Try Again' }]);
                 return;
             } else if (!this.con2) {
-                alert('Missing Second Field');
+                this.modalControl('Please Select the Second Currency', 'Missing Second Field', [{ name: 'Try Again' }]);
                 return;
             } else if (!this.theInput.value && event.type == 'click') {
-                alert('Missing Value to Convert');
+                this.modalControl('Please Enter the Value to Convert', 'Missing Value to Convert', [{ name: 'Try Again' }]);
                 return;
             } else if (!this.userSelect.exrate && !this.userSelect.swarpExrate) {
-                alert('Sorry, You Have to Convert The Currency before you can Swrap It.');
+                this.modalControl('Sorry, You Have to Convert The Currency before you can Swrap It.', '', [{ name: 'Try Again' }]);
                 return;
             }
 
@@ -560,35 +584,35 @@ var App = function (_ApiMain) {
     }, {
         key: 'formSubmitted',
         value: function formSubmitted(event) {
-            var _this11 = this;
+            var _this9 = this;
 
             event.type == 'click' ? event.preventDefault() : '';
             // console.log('form data: ', event);
 
             if (!this.con1 && !this.con2) {
-                alert('Missing First Field and Second Field');
+                this.modalControl('Please Select the Currency you want to Convert From and To', 'Missing First Field and Second Field', [{ name: 'Try Again' }]);
                 return;
             } else if (!this.con1) {
-                alert('Missing First Field');
+                this.modalControl('Please Select the First Currency', 'Missing First Field', [{ name: 'Try Again' }]);
                 return;
             } else if (!this.con2) {
-                alert('Missing Second Field');
+                this.modalControl('Please Select the Second Currency', 'Missing Second Field', [{ name: 'Try Again' }]);
                 return;
             } else if (!this.theInput.value && event.type == 'click') {
-                alert('Missing Value to Convert');
+                this.modalControl('Please Enter the Value to Convert', 'Missing Value to Convert', [{ name: 'Try Again' }]);
                 return;
             }
 
             var value = this.theInput.value;
-            if (this.exrate && this.exrate != '') {
+            if (value && this.exrate && this.exrate != '') {
                 this.calRate(value, this.exrate).then(function (res) {
                     // console.log('converted rate', res);
-                    _this11.theOutput.innerText = (_this11.userSelect.con2Data.currencySymbol ? _this11.userSelect.con2Data.currencySymbol : '') + ' ' + _this11.numberWithCommas(res);
-                    $(_this11.theOutput).parent().parent().show(2000);
+                    _this9.theOutput.innerText = (_this9.userSelect.con2Data.currencySymbol ? _this9.userSelect.con2Data.currencySymbol : '') + ' ' + _this9.numberWithCommas(res);
+                    $(_this9.theOutput).parent().parent().show(2000);
 
-                    $('#inputGroup-icon').text('' + (_this11.userSelect.con1Data.currencySymbol ? _this11.userSelect.con1Data.currencySymbol : ''));
+                    $('#inputGroup-icon').text('' + (_this9.userSelect.con1Data.currencySymbol ? _this9.userSelect.con1Data.currencySymbol : ''));
                 }).catch(function (err) {
-                    return _this11.handleError(err);
+                    return _this9.handleError(err);
                 });
             }
         }
@@ -637,61 +661,23 @@ var App = function (_ApiMain) {
         key: 'getAndCalRate',
         value: function () {
             var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-                var _this12 = this;
+                var _this10 = this;
 
-                var con1 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-                var con2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
                                 _context.prev = 0;
-
-                                if (!con1) {
-                                    _context.next = 7;
-                                    break;
-                                }
-
-                                _context.next = 4;
-                                return this.db.getItem(con1, this.db.countries);
-
-                            case 4:
-                                _context.t0 = _context.sent;
-                                _context.next = 10;
-                                break;
-
-                            case 7:
-                                _context.next = 9;
+                                _context.next = 3;
                                 return this.db.getItem(this.con1, this.db.countries);
 
-                            case 9:
-                                _context.t0 = _context.sent;
-
-                            case 10:
-                                this.userSelect.con1Data = _context.t0;
-
-                                if (!con2) {
-                                    _context.next = 17;
-                                    break;
-                                }
-
-                                _context.next = 14;
-                                return this.db.getItem(con2, this.db.countries);
-
-                            case 14:
-                                _context.t1 = _context.sent;
-                                _context.next = 20;
-                                break;
-
-                            case 17:
-                                _context.next = 19;
+                            case 3:
+                                this.userSelect.con1Data = _context.sent;
+                                _context.next = 6;
                                 return this.db.getItem(this.con2, this.db.countries);
 
-                            case 19:
-                                _context.t1 = _context.sent;
-
-                            case 20:
-                                this.userSelect.con2Data = _context.t1;
+                            case 6:
+                                this.userSelect.con2Data = _context.sent;
 
 
                                 if (Object.keys(this.userSelect.con1Data).length != 0 && Object.keys(this.userSelect.con2Data).length != 0) {
@@ -705,45 +691,45 @@ var App = function (_ApiMain) {
                                     this.db.getByIdAndIndex(this.userSelect.con, this.db.user, 'swarpCon').then(function (con) {
                                         //console.log('got currency from db', con);
                                         // check if the currency is older than an hour 
-                                        if (!_this12.checkForAnHour(con.date)) {
+                                        if (!_this10.checkForAnHour(con.date)) {
                                             // it is greater than an hour. do not use. try to get new
                                             //console.log('older than an hour getting new from api');
                                             // in cases of error i.e no internet, use old data.
-                                            _this12.getLastestCurrency(con);
+                                            _this10.getLastestCurrency(con);
                                         } else {
                                             // currency is not greater than an hour. use the one in db
                                             //console.log('NOT older than an hour');
-                                            _this12.exrate = parseFloat(con.exrate.toFixed(4));
+                                            _this10.exrate = parseFloat(con.exrate.toFixed(4));
 
-                                            _this12.userSelect.exrate = _this12.exrate;
-                                            var exe = 1 / _this12.exrate;
-                                            _this12.userSelect.swarpExrate = parseFloat(exe.toFixed(4));
+                                            _this10.userSelect.exrate = _this10.exrate;
+                                            var exe = 1 / _this10.exrate;
+                                            _this10.userSelect.swarpExrate = parseFloat(exe.toFixed(4));
 
-                                            $('#exrate').html(_this12.exrate);
+                                            $('#exrate').html(_this10.exrate);
                                             // show the rate box
                                             $('#exrate').parent().parent().show(2000);
                                         }
                                     }).catch(function (ercon) {
                                         //console.log('sorry currency not avaliable in db', ercon);
-                                        _this12.getLastestCurrency();
+                                        _this10.getLastestCurrency();
                                     });
                                 }
 
-                                _context.next = 27;
+                                _context.next = 13;
                                 break;
 
-                            case 24:
-                                _context.prev = 24;
-                                _context.t2 = _context['catch'](0);
+                            case 10:
+                                _context.prev = 10;
+                                _context.t0 = _context['catch'](0);
 
-                                this.handleError(err);
+                                this.handleError(_context.t0);
 
-                            case 27:
+                            case 13:
                             case 'end':
                                 return _context.stop();
                         }
                     }
-                }, _callee, this, [[0, 24]]);
+                }, _callee, this, [[0, 10]]);
             }));
 
             function getAndCalRate() {
@@ -755,7 +741,7 @@ var App = function (_ApiMain) {
     }, {
         key: 'getLastestCurrency',
         value: function getLastestCurrency() {
-            var _this13 = this;
+            var _this11 = this;
 
             var con = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
@@ -765,38 +751,38 @@ var App = function (_ApiMain) {
             this.getRate(this.userSelect.con1, this.userSelect.con2).then(function (res) {
                 $('.marg-3').hide();
 
-                _this13.exrate = parseFloat(res.toFixed(4));
+                _this11.exrate = parseFloat(res.toFixed(4));
 
-                _this13.userSelect.exrate = _this13.exrate;
-                _this13.userSelect.date = new Date();
-                var exe = 1 / _this13.exrate;
-                _this13.userSelect.swarpExrate = parseFloat(exe.toFixed(4));
+                _this11.userSelect.exrate = _this11.exrate;
+                _this11.userSelect.date = new Date();
+                var exe = 1 / _this11.exrate;
+                _this11.userSelect.swarpExrate = parseFloat(exe.toFixed(4));
 
-                _this13.db.addItem(_this13.userSelect, _this13.db.user).then(function (res) {
+                _this11.db.addItem(_this11.userSelect, _this11.db.user).then(function (res) {
                     // regenrate the table
-                    _this13.createTable();
+                    _this11.createTable();
                 });
 
                 //console.log('new user data', this.userSelect);
 
-                $('#exrate').html(_this13.exrate);
+                $('#exrate').html(_this11.exrate);
                 // show the rate box
                 $('#exrate').parent().parent().show(2000);
             }).catch(function (err) {
                 $('.marg-3').hide();
                 // fallback. if currency exist in db but fetch failed i.e internet reasons, return old data
                 if (con && con != '') {
-                    _this13.exrate = parseFloat(con.exrate.toFixed(4));
+                    _this11.exrate = parseFloat(con.exrate.toFixed(4));
 
-                    _this13.userSelect.exrate = _this13.exrate;
-                    var exe = 1 / _this13.exrate;
-                    _this13.userSelect.swarpExrate = parseFloat(exe.toFixed(4));
+                    _this11.userSelect.exrate = _this11.exrate;
+                    var exe = 1 / _this11.exrate;
+                    _this11.userSelect.swarpExrate = parseFloat(exe.toFixed(4));
 
-                    $('#exrate').html(_this13.exrate);
+                    $('#exrate').html(_this11.exrate);
                     // show the rate box
                     $('#exrate').parent().parent().show(2000);
                 }
-                _this13.handleError(err, 'Err getting Exechange Rate');
+                _this11.handleError(err, 'Err getting Exechange Rate');
             });
         }
 
@@ -853,7 +839,7 @@ var App = function (_ApiMain) {
     }, {
         key: 'getCountry',
         value: function getCountry() {
-            var _this14 = this;
+            var _this12 = this;
 
             // show the loader
             $('.marg-3').show();
@@ -862,21 +848,21 @@ var App = function (_ApiMain) {
                 if (res && res.length !== 0) {
                     $('.marg-3').hide();
                     // we have items in database. return to the user
-                    _this14.setSelectFields(res, 2);
+                    _this12.setSelectFields(res, 2);
                 } else {
                     $('.marg-3').show();
                     // we dont have any items in the database, make http request to get one
-                    _this14.getAllCountries().then(function (res) {
+                    _this12.getAllCountries().then(function (res) {
                         $('.marg-3').hide();
-                        _this14.setSelectFields(res, 1);
+                        _this12.setSelectFields(res, 1);
                     }).catch(function (err) {
                         $('.marg-3').hide();
-                        _this14.handleError(err, 'Err getting Countries');
+                        _this12.handleError(err, 'Err getting Countries');
                     });
                 }
             }).catch(function (err) {
                 $('.marg-3').hide();
-                _this14.handleError(err, 'Err getting Items from DB');
+                _this12.handleError(err, 'Err getting Items from DB');
             });
         }
 
@@ -955,7 +941,9 @@ var App = function (_ApiMain) {
     }, {
         key: 'createTable',
         value: function createTable() {
-            var _this15 = this;
+            var _this13 = this;
+
+            this.userSelect.name != 'none' ? $('#app-user').html(this.userSelect.name) : '';
 
             // check if there is entries in the database.
             this.db.getAllItemsInATable(this.db.user).then(function (res) {
@@ -975,7 +963,7 @@ var App = function (_ApiMain) {
 
                             // save in array to add to DOM
                             //ele += `<option value="${item.id}" data-subtext="${item.currencyName}">${item.name} (${item.currencyId})</option>`; 
-                            ele += '  \n                    <tr>\n                        <th scope="row"> ' + item.con + ' </th>\n                        <td> ' + item.con1 + ' </td>\n                        <td> ' + item.con2 + ' </td>\n                        <td> ' + item.exrate + ' </td>\n                        <td> ' + (_this15.checkForAnHour(item.date) ? 'True' : 'False (<a href="#" class="renewBtn" data-item-con1="' + item.con1 + '" data-item-con2="' + item.con2 + '"> Renew </a>)') + ' </td>\n                        <td> <a href="#" class="btn btn-primary usenowBtn" \n                        data-item-con="' + item.con + '" \n                        data-item-con1="' + item.con1 + '" \n                        data-item-con2="' + item.con2 + '" \n                        data-item-exrate="' + item.exrate + '"\n                        data-item-swarpExrate="' + item.swarpExrate + '"\n                        data-item-user1symbol="' + item.con1Data.currencySymbol + '"\n                        data-item-user2symbol="' + item.con2Data.currencySymbol + '"\n                        > Use Now </a> </td>\n                    </tr>\n                    <tr>\n                        <th scope="row"> ' + item.swarpCon + ' </th>\n                        <td> ' + item.con2 + ' </td>\n                        <td> ' + item.con1 + ' </td>\n                        <td> ' + item.swarpExrate + ' </td>\n                        <td> ' + (_this15.checkForAnHour(item.date) ? 'True' : 'False (<a href="#" class="renewBtn" data-item-con1="' + item.con2 + '" data-item-con2="' + item.con1 + '"> Renew </a>)') + ' </td>\n                        <td> <a href="#" class="btn btn-primary usenowBtn" \n                        data-item-con="' + item.swarpCon + '" \n                        data-item-con1="' + item.con2 + '" \n                        data-item-con2="' + item.con1 + '" \n                        data-item-exrate="' + item.swarpExrate + '"\n                        data-item-swarpExrate="' + item.exrate + '"\n                        data-item-user1symbol="' + item.con2Data.currencySymbol + '"\n                        data-item-user2symbol="' + item.con1Data.currencySymbol + '"\n                        > Use Now </a> </td>\n                    </tr>\n                    ';
+                            ele += '  \n                    <tr>\n                        <th scope="row"> ' + item.con + ' </th>\n                        <td> ' + item.con1 + ' </td>\n                        <td> ' + item.con2 + ' </td>\n                        <td> ' + item.exrate + ' </td>\n                        <td> ' + (_this13.checkForAnHour(item.date) ? 'True' : 'False (\n                                <a href="#" class="renewBtn" \n                                data-item-con="' + item.con + '" \n                                data-item-con1="' + item.con1 + '" \n                                data-item-con2="' + item.con2 + '" \n                                data-item-exrate="' + item.exrate + '"\n                                data-item-swarpExrate="' + item.swarpExrate + '"\n                                data-item-user1id="' + item.con1Data.id + '"\n                                data-item-user2id="' + item.con2Data.id + '"\n                                data-item-user1symbol="' + item.con1Data.currencySymbol + '"\n                                data-item-user2symbol="' + item.con2Data.currencySymbol + '"\n                                > Renew </a>)') + ' </td>\n                        <td> <a href="#" class="btn btn-primary usenowBtn" \n                        data-item-con="' + item.con + '" \n                        data-item-con1="' + item.con1 + '" \n                        data-item-con2="' + item.con2 + '" \n                        data-item-exrate="' + item.exrate + '"\n                        data-item-swarpExrate="' + item.swarpExrate + '"\n                        data-item-user1id="' + item.con1Data.id + '"\n                        data-item-user2id="' + item.con2Data.id + '"\n                        data-item-user1symbol="' + item.con1Data.currencySymbol + '"\n                        data-item-user2symbol="' + item.con2Data.currencySymbol + '"\n                        > Use Now </a> \n                        <a href="#" class="btn btn-danger deleteBtn"\n                        data-item-con="' + item.con + '" \n                        data-item-con1="' + item.con1 + '" \n                        data-item-con2="' + item.con2 + '"\n                        > Delete </a>\n                        </td>\n                    </tr>\n                    <tr>\n                        <th scope="row"> ' + item.swarpCon + ' </th>\n                        <td> ' + item.con2 + ' </td>\n                        <td> ' + item.con1 + ' </td>\n                        <td> ' + item.swarpExrate + ' </td>\n                        <td> ' + (_this13.checkForAnHour(item.date) ? 'True' : 'False (\n                                <a href="#" class="renewBtn" \n                                data-item-con="' + item.swarpCon + '" \n                                data-item-con1="' + item.con2 + '" \n                                data-item-con2="' + item.con1 + '" \n                                data-item-exrate="' + item.swarpExrate + '"\n                                data-item-swarpExrate="' + item.exrate + '"\n                                data-item-user1id="' + item.con2Data.id + '"\n                                data-item-user2id="' + item.con1Data.id + '"\n                                data-item-user1symbol="' + item.con2Data.currencySymbol + '"\n                                data-item-user2symbol="' + item.con1Data.currencySymbol + '"\n                                > Renew </a>)') + ' \n                                \n                                </td>\n                        <td> <a href="#" class="btn btn-primary usenowBtn" \n                        data-item-con="' + item.swarpCon + '" \n                        data-item-con1="' + item.con2 + '" \n                        data-item-con2="' + item.con1 + '" \n                        data-item-exrate="' + item.swarpExrate + '"\n                        data-item-swarpExrate="' + item.exrate + '"\n                        data-item-user1id="' + item.con2Data.id + '"\n                        data-item-user2id="' + item.con1Data.id + '"\n                        data-item-user1symbol="' + item.con2Data.currencySymbol + '"\n                        data-item-user2symbol="' + item.con1Data.currencySymbol + '"\n                        > Use Now </a> \n                        <a href="#" class="btn btn-danger deleteBtn"\n                        data-item-con="' + item.swarpCon + '" \n                        data-item-con1="' + item.con2 + '" \n                        data-item-con2="' + item.con1 + '"\n                        > Delete </a>\n                        </td>\n                    </tr>\n                    ';
                         }
                     } catch (err) {
                         _didIteratorError2 = true;
@@ -997,8 +985,51 @@ var App = function (_ApiMain) {
                     $('.marg-2').hide();
                 }
             }).catch(function (err) {
-                return _this15.handleError(err);
+                return _this13.handleError(err);
             });
+        }
+    }, {
+        key: 'handleEvent',
+        value: function handleEvent(event) {
+            var _this14 = this;
+
+            // the html event 
+            // event.preventDefault()
+            var data = event.currentTarget.dataset;
+
+            // get the exchange rate
+            this.exrate = data.itemExrate;
+            this.con1 = data.itemUser1id;
+            this.con2 = data.itemUser2id;
+
+            this.userSelect.con1 = data.itemCon1;
+            this.userSelect.con2 = data.itemCon2;
+
+            this.userSelect.con = this.userSelect.con1 + '_' + this.userSelect.con2;
+            this.userSelect.swarpCon = this.userSelect.con2 + '_' + this.userSelect.con1;
+
+            this.userSelect.exrate = this.exrate;
+            this.userSelect.swarpExrate = data.itemSwarpexrate;
+
+            $(this.country1).val(this.con1);
+            $(this.country2).val(this.con2);
+            $(".selectpicker").selectpicker("refresh");
+
+            this.userSelect.con2Data.currencySymbol = data.itemUser2symbol;
+            this.userSelect.con1Data.currencySymbol = data.itemUser1symbol;
+
+            var value = this.theInput.value;
+            if (value && this.exrate && this.exrate != '') {
+                this.calRate(value, this.exrate).then(function (res) {
+                    // console.log('converted rate', res);
+                    _this14.theOutput.innerText = (_this14.userSelect.con2Data.currencySymbol ? _this14.userSelect.con2Data.currencySymbol : '') + ' ' + _this14.numberWithCommas(res);
+                    $(_this14.theOutput).parent().parent().show(2000);
+
+                    $('#inputGroup-icon').text('' + (_this14.userSelect.con1Data.currencySymbol ? _this14.userSelect.con1Data.currencySymbol : ''));
+                }).catch(function (err) {
+                    return _this14.handleError(err);
+                });
+            }
         }
 
         /**
@@ -1013,16 +1044,8 @@ var App = function (_ApiMain) {
         key: 'HandleuseNowClick',
         value: function HandleuseNowClick(event) {
             // console.log('use now btn clicked', event.currentTarget.dataset);
-            var data = event.currentTarget.dataset;
 
-            this.exrate = data.itemExrate;
-            this.con1 = data.itemCon1;
-            this.con2 = data.itemCon2;
-
-            this.userSelect.exrate = this.exrate;
-            this.userSelect.swarpExrate = data.itemSwarpexrate;
-            this.userSelect.con2Data.currencySymbol = data.itemUser2symbol;
-            this.userSelect.con1Data.currencySymbol = data.itemUser1symbol;
+            this.handleEvent(event);
 
             //console.log(this.exrate, this.con1, this.con2);
             $('#exrate').html(this.exrate);
@@ -1041,12 +1064,52 @@ var App = function (_ApiMain) {
     }, {
         key: 'HandleRenewClick',
         value: function HandleRenewClick(event) {
+
+            this.handleEvent(event);
+
+            this.getLastestCurrency();
+        }
+
+        /**
+         * When User Clicks on the Delete Button
+         * 
+         * This shows up on the User Convertion History
+         * 
+         * @param {Event} event 
+         */
+
+    }, {
+        key: 'HandleDeleteClick',
+        value: function HandleDeleteClick(event) {
+            var _this15 = this;
+
+            event.preventDefault();
             var data = event.currentTarget.dataset;
+            var con = data.itemCon1 + '_' + data.itemCon2;
+            var swapcon = data.itemCon2 + '_' + data.itemCon1;
 
-            var con1 = data.itemCon1;
-            var con2 = data.itemCon2;
+            var mssg = 'Are you Sure you want to Delete this Item <b> (' + con + ') </b> ? <br> \n                        Please Note: This Will Delete this Item as Well <b> (' + swapcon + ') </b> ';
+            var title = 'Delete Item ' + con;
+            var button = [{
+                name: 'No'
+            }, {
+                name: 'Yes',
+                callback: function callback() {
+                    _this15.db.deleteIteminTable(con, _this15.db.user);
+                    _this15.db.deleteIteminTable(swapcon, _this15.db.user);
+                    _this15.createTable();
+                    $('#cc-modal').modal('hide');
+                }
+            }];
 
-            this.getAndCalRate(con1, con2);
+            this.modalControl(mssg, title, button);
+        }
+    }, {
+        key: 'handleOnline',
+        value: function handleOnline(event) {
+            var mssg = 'Good. You are back online';
+
+            this.message('success', mssg, 5);
         }
 
         /**
@@ -1060,7 +1123,7 @@ var App = function (_ApiMain) {
         value: function handleOffline(event) {
             var mssg = 'Sorry, You are Offline. <br/> In Offline Mode, you only have access to currencies you have prevously selected';
 
-            this.message('danger', mssg, 5);
+            this.message('danger', mssg, 30);
         }
 
         /**
@@ -1094,6 +1157,73 @@ var App = function (_ApiMain) {
                     $(_this16.MssgBox).removeClass('alert-' + className).html('').hide();
                 }, 1000 * duration);
             }
+        }
+
+        /**
+         * Create the Modal 
+         * 
+         * @example Button = 
+         * [
+         *  {
+         *      name: 'hello button',
+         *      callback: function() {
+         *          console.log('user clicked on hello button');
+         *          $('#cc-modal').modal('hide'); 
+         *      }
+         *  }
+         * ]
+         * 
+         * NOTE $('#cc-modal').modal('hide'); for all callbacks
+         * 
+         * @param {String} body The Body of the Modal
+         * @param {String} title The Title of the Modal
+         * @param {Array<Object>} button Modal Button
+         */
+
+    }, {
+        key: 'modalControl',
+        value: function modalControl(body) {
+            var title = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+            var button = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+
+
+            // check for modal title
+            title !== '' ? $('.modal-header').show().find('.modal-title').html(title) : $('.modal-header').hide();
+
+            // by default hide the action button
+            $('.action-modal').hide();
+
+            button === '' ? $('.close-modal').html('Close') : button;
+
+            $('.modal-body').html(body);
+
+            if (button !== '') {
+                if (button.length > 1) {
+                    // show the second button
+                    $('.action-modal').show();
+
+                    // for now we can only have two buttons
+
+                    // close is button 1
+                    $('.close-modal').html(button[0].name);
+                    $('.close-modal').on('click', button[0].callback);
+
+                    // while action is button 2
+                    $('.action-modal').html(button[1].name);
+                    $('.action-modal').on('click', button[1].callback);
+                } else {
+
+                    $('.close-modal').html(button[0].name);
+                    $('.close-modal').on('click', button[0].callback);
+                }
+            }
+
+            $('#cc-modal').modal();
+
+            $('#cc-modal').on('hidden.bs.modal', function (e) {
+                $('.close-modal').off('click');
+                $('.action-modal').off('click');
+            });
         }
 
         /**
