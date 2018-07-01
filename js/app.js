@@ -505,6 +505,7 @@ var App = function (_ApiMain) {
                         var ele = e.currentTarget.parentElement.previousElementSibling.firstElementChild.lastElementChild.lastElementChild.value;
                         // console.log('user details', ele);
                         localStorage.setItem('cc-name', ele);
+                        $('#app-user').html(ele);
                         $('#cc-modal').modal('hide');
                     }
                 }];
