@@ -1,7 +1,7 @@
 
 /* This acts has the cache name as well  */
 const app = 'the-currency-converter-app-';
-const version = '02'
+const version = '03'
 const appName = `${app + version}`;
 
  const path = (location.hostname === 'triple0t.github.io') ? '/alc-currency-converter/' : '/';
@@ -18,7 +18,17 @@ const resources = {
         `${path}libs/jquery.slim.min.js`,
         `${path}libs/polyfill.min.js`,
         `${path}libs/popper.min.js`,
-        `${path}libs/idb.js`
+        `${path}libs/idb.js`,
+        `${path}icon.png`,
+        `${path}manifest.json`,
+        `${path}images/icons/icon-72x72.png`,
+        `${path}images/icons/icon-96x96.png`,
+        `${path}images/icons/icon-128x128.png`,
+        `${path}images/icons/icon-144x144.png`,
+        `${path}images/icons/icon-152x152.png`,
+        `${path}images/icons/icon-192x192.png`,
+        `${path}images/icons/icon-384x384.png`,
+        `${path}images/icons/icon-512x512.png`
     ],
     app: [
         `${path}css/app.css`,

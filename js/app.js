@@ -489,6 +489,7 @@ var App = function (_ApiMain) {
 
             // this.usenowBtn.addEventListener('click', this.HandleuseNowClick.bind(this));
             $("#tb-body").on('click', '.usenowBtn', this.HandleuseNowClick.bind(this));
+            $("#tb-body").on('click', '.renewBtn', this.HandleRenewClick.bind(this));
         }
 
         /**
@@ -625,27 +626,72 @@ var App = function (_ApiMain) {
                 this.getAndCalRate();
             }
         }
+
+        /**
+         * Get The Exchange Rate
+         * 
+         * Caculate the Convertion
+         */
+
     }, {
         key: 'getAndCalRate',
         value: function () {
             var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
                 var _this12 = this;
 
+                var con1 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+                var con2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
                                 _context.prev = 0;
-                                _context.next = 3;
+
+                                if (!con1) {
+                                    _context.next = 7;
+                                    break;
+                                }
+
+                                _context.next = 4;
+                                return this.db.getItem(con1, this.db.countries);
+
+                            case 4:
+                                _context.t0 = _context.sent;
+                                _context.next = 10;
+                                break;
+
+                            case 7:
+                                _context.next = 9;
                                 return this.db.getItem(this.con1, this.db.countries);
 
-                            case 3:
-                                this.userSelect.con1Data = _context.sent;
-                                _context.next = 6;
+                            case 9:
+                                _context.t0 = _context.sent;
+
+                            case 10:
+                                this.userSelect.con1Data = _context.t0;
+
+                                if (!con2) {
+                                    _context.next = 17;
+                                    break;
+                                }
+
+                                _context.next = 14;
+                                return this.db.getItem(con2, this.db.countries);
+
+                            case 14:
+                                _context.t1 = _context.sent;
+                                _context.next = 20;
+                                break;
+
+                            case 17:
+                                _context.next = 19;
                                 return this.db.getItem(this.con2, this.db.countries);
 
-                            case 6:
-                                this.userSelect.con2Data = _context.sent;
+                            case 19:
+                                _context.t1 = _context.sent;
+
+                            case 20:
+                                this.userSelect.con2Data = _context.t1;
 
 
                                 if (Object.keys(this.userSelect.con1Data).length != 0 && Object.keys(this.userSelect.con2Data).length != 0) {
@@ -683,21 +729,21 @@ var App = function (_ApiMain) {
                                     });
                                 }
 
-                                _context.next = 13;
+                                _context.next = 27;
                                 break;
 
-                            case 10:
-                                _context.prev = 10;
-                                _context.t0 = _context['catch'](0);
+                            case 24:
+                                _context.prev = 24;
+                                _context.t2 = _context['catch'](0);
 
                                 this.handleError(err);
 
-                            case 13:
+                            case 27:
                             case 'end':
                                 return _context.stop();
                         }
                     }
-                }, _callee, this, [[0, 10]]);
+                }, _callee, this, [[0, 24]]);
             }));
 
             function getAndCalRate() {
@@ -897,6 +943,15 @@ var App = function (_ApiMain) {
 
             $(".selectpicker").selectpicker("refresh");
         }
+
+        /**
+         * Create The User Convertion History Table
+         * 
+         * Then Present it to the User
+         * 
+         * Data Gotten from the Index DB
+         */
+
     }, {
         key: 'createTable',
         value: function createTable() {
@@ -920,7 +975,7 @@ var App = function (_ApiMain) {
 
                             // save in array to add to DOM
                             //ele += `<option value="${item.id}" data-subtext="${item.currencyName}">${item.name} (${item.currencyId})</option>`; 
-                            ele += '  \n                    <tr>\n                        <th scope="row"> ' + item.con + ' </th>\n                        <td> ' + item.con1 + ' </td>\n                        <td> ' + item.con2 + ' </td>\n                        <td> ' + item.exrate + ' </td>\n                        <td> ' + (_this15.checkForAnHour(item.date) ? 'True' : 'False') + ' </td>\n                        <td> <a href="#" class="btn btn-primary usenowBtn" \n                        data-item-con="' + item.con + '" \n                        data-item-con1="' + item.con1 + '" \n                        data-item-con2="' + item.con2 + '" \n                        data-item-exrate="' + item.exrate + '"\n                        data-item-swarpExrate="' + item.swarpExrate + '"\n                        data-item-user1symbol="' + item.con1Data.currencySymbol + '"\n                        data-item-user2symbol="' + item.con2Data.currencySymbol + '"\n                        > Use Now </a> </td>\n                    </tr>\n                    <tr>\n                        <th scope="row"> ' + item.swarpCon + ' </th>\n                        <td> ' + item.con2 + ' </td>\n                        <td> ' + item.con1 + ' </td>\n                        <td> ' + item.swarpExrate + ' </td>\n                        <td> ' + (_this15.checkForAnHour(item.date) ? 'True' : 'False') + ' </td>\n                        <td> <a href="#" class="btn btn-primary usenowBtn" \n                        data-item-con="' + item.swarpCon + '" \n                        data-item-con1="' + item.con2 + '" \n                        data-item-con2="' + item.con1 + '" \n                        data-item-exrate="' + item.swarpExrate + '"\n                        data-item-swarpExrate="' + item.exrate + '"\n                        data-item-user1symbol="' + item.con2Data.currencySymbol + '"\n                        data-item-user2symbol="' + item.con1Data.currencySymbol + '"\n                        > Use Now </a> </td>\n                    </tr>\n                    ';
+                            ele += '  \n                    <tr>\n                        <th scope="row"> ' + item.con + ' </th>\n                        <td> ' + item.con1 + ' </td>\n                        <td> ' + item.con2 + ' </td>\n                        <td> ' + item.exrate + ' </td>\n                        <td> ' + (_this15.checkForAnHour(item.date) ? 'True' : 'False (<a href="#" class="renewBtn" data-item-con1="' + item.con1 + '" data-item-con2="' + item.con2 + '"> Renew </a>)') + ' </td>\n                        <td> <a href="#" class="btn btn-primary usenowBtn" \n                        data-item-con="' + item.con + '" \n                        data-item-con1="' + item.con1 + '" \n                        data-item-con2="' + item.con2 + '" \n                        data-item-exrate="' + item.exrate + '"\n                        data-item-swarpExrate="' + item.swarpExrate + '"\n                        data-item-user1symbol="' + item.con1Data.currencySymbol + '"\n                        data-item-user2symbol="' + item.con2Data.currencySymbol + '"\n                        > Use Now </a> </td>\n                    </tr>\n                    <tr>\n                        <th scope="row"> ' + item.swarpCon + ' </th>\n                        <td> ' + item.con2 + ' </td>\n                        <td> ' + item.con1 + ' </td>\n                        <td> ' + item.swarpExrate + ' </td>\n                        <td> ' + (_this15.checkForAnHour(item.date) ? 'True' : 'False (<a href="#" class="renewBtn" data-item-con1="' + item.con2 + '" data-item-con2="' + item.con1 + '"> Renew </a>)') + ' </td>\n                        <td> <a href="#" class="btn btn-primary usenowBtn" \n                        data-item-con="' + item.swarpCon + '" \n                        data-item-con1="' + item.con2 + '" \n                        data-item-con2="' + item.con1 + '" \n                        data-item-exrate="' + item.swarpExrate + '"\n                        data-item-swarpExrate="' + item.exrate + '"\n                        data-item-user1symbol="' + item.con2Data.currencySymbol + '"\n                        data-item-user2symbol="' + item.con1Data.currencySymbol + '"\n                        > Use Now </a> </td>\n                    </tr>\n                    ';
                         }
                     } catch (err) {
                         _didIteratorError2 = true;
@@ -945,6 +1000,15 @@ var App = function (_ApiMain) {
                 return _this15.handleError(err);
             });
         }
+
+        /**
+         * When User Clicks On the Use Now Button 
+         * 
+         * This shows up on the User Convertion History
+         *  
+         * @param {Event} event 
+         */
+
     }, {
         key: 'HandleuseNowClick',
         value: function HandleuseNowClick(event) {
@@ -965,6 +1029,32 @@ var App = function (_ApiMain) {
             // show the rate box
             $('#exrate').parent().parent().show(2000);
         }
+
+        /**
+         * When User Clicks on the Renew Button
+         * 
+         * This shows up on the User Convertion History
+         * 
+         * @param {Event} event 
+         */
+
+    }, {
+        key: 'HandleRenewClick',
+        value: function HandleRenewClick(event) {
+            var data = event.currentTarget.dataset;
+
+            var con1 = data.itemCon1;
+            var con2 = data.itemCon2;
+
+            this.getAndCalRate(con1, con2);
+        }
+
+        /**
+         * Offline Event Handler
+         * 
+         * @param {Event} event 
+         */
+
     }, {
         key: 'handleOffline',
         value: function handleOffline(event) {

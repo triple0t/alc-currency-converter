@@ -1,6 +1,8 @@
 # alc-currency-converter
 
-Currency Converter built for the ALC Challenge
+Currency Converter built for the ALC Challenge backed by Google, Udacity and Andele.
+
+Currecny API by [currencyconverterapi.com](https://currencyconverterapi.com)
 
 # View At
 
@@ -9,13 +11,19 @@ View this webapp at [https://triple0t.github.io/alc-currency-converter](https://
 
 # To Test
 
-donwload the repo [https://github.com/triple0t/alc-currency-converter](https://github.com/triple0t/alc-currency-converter)
+Donwload the repo [https://github.com/triple0t/alc-currency-converter](https://github.com/triple0t/alc-currency-converter)
 
-## you may choose to download the dependencies and run the development version
+## you may choose to download the dependencies
 
-install the dependencies `npm install`
+Install the dependencies `npm install`
 
-start the app `npm start`
+## Start the App
+
+Start the app `npm start`
+
+##  run the development version
+
+Development App `npm run serve`
 
 ## or 
 

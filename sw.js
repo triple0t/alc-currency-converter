@@ -2,14 +2,14 @@
 
 /* This acts has the cache name as well  */
 var app = 'the-currency-converter-app-';
-var version = '02';
+var version = '03';
 var appName = '' + (app + version);
 
 var path = location.hostname === 'triple0t.github.io' ? '/alc-currency-converter/' : '/';
 
 /* List of resources to add to cache */
 var resources = {
-    libs: ['' + path, path + 'index.html', path + 'libs/bootstrap.min.css', path + 'libs/bootstrap-select.min.css', path + 'libs/bootstrap-select.min.js', path + 'libs/bootstrap.min.js', path + 'libs/jquery.slim.min.js', path + 'libs/polyfill.min.js', path + 'libs/popper.min.js', path + 'libs/idb.js'],
+    libs: ['' + path, path + 'index.html', path + 'libs/bootstrap.min.css', path + 'libs/bootstrap-select.min.css', path + 'libs/bootstrap-select.min.js', path + 'libs/bootstrap.min.js', path + 'libs/jquery.slim.min.js', path + 'libs/polyfill.min.js', path + 'libs/popper.min.js', path + 'libs/idb.js', path + 'icon.png', path + 'manifest.json', path + 'images/icons/icon-72x72.png', path + 'images/icons/icon-96x96.png', path + 'images/icons/icon-128x128.png', path + 'images/icons/icon-144x144.png', path + 'images/icons/icon-152x152.png', path + 'images/icons/icon-192x192.png', path + 'images/icons/icon-384x384.png', path + 'images/icons/icon-512x512.png'],
     app: [path + 'css/app.css', path + 'js/app.js'],
     api: ['https://free.currencyconverterapi.com/api/v5/countries']
 };

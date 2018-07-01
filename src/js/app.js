@@ -402,6 +402,7 @@ class App extends ApiMain {
 
         // this.usenowBtn.addEventListener('click', this.HandleuseNowClick.bind(this));
         $("#tb-body").on('click', '.usenowBtn', this.HandleuseNowClick.bind(this));
+        $("#tb-body").on('click', '.renewBtn', this.HandleRenewClick.bind(this));
     }
 
     /**
@@ -530,10 +531,15 @@ class App extends ApiMain {
         }
     }
 
-    async getAndCalRate() {
+    /**
+     * Get The Exchange Rate
+     * 
+     * Caculate the Convertion
+     */
+    async getAndCalRate(con1 = '', con2 = '') {
         try {
-            this.userSelect.con1Data = await this.db.getItem(this.con1, this.db.countries);
-            this.userSelect.con2Data = await this.db.getItem(this.con2, this.db.countries);
+            this.userSelect.con1Data = ( con1 ) ? await this.db.getItem(con1, this.db.countries) :  await this.db.getItem(this.con1, this.db.countries);
+            this.userSelect.con2Data = ( con2 ) ? await this.db.getItem(con2, this.db.countries) :  await this.db.getItem(this.con2, this.db.countries);
 
             if (Object.keys(this.userSelect.con1Data).length != 0 && Object.keys(this.userSelect.con2Data).length != 0) {
                 
@@ -738,6 +744,13 @@ class App extends ApiMain {
 
     }
 
+    /**
+     * Create The User Convertion History Table
+     * 
+     * Then Present it to the User
+     * 
+     * Data Gotten from the Index DB
+     */
     createTable() {
         // check if there is entries in the database.
         this.db.getAllItemsInATable(this.db.user)
@@ -757,7 +770,7 @@ class App extends ApiMain {
                         <td> ${item.con1} </td>
                         <td> ${item.con2} </td>
                         <td> ${item.exrate} </td>
-                        <td> ${this.checkForAnHour(item.date) ? 'True' : 'False' } </td>
+                        <td> ${this.checkForAnHour(item.date) ? 'True' : `False (<a href="#" class="renewBtn" data-item-con1="${item.con1}" data-item-con2="${item.con2}"> Renew </a>)` } </td>
                         <td> <a href="#" class="btn btn-primary usenowBtn" 
                         data-item-con="${item.con}" 
                         data-item-con1="${item.con1}" 
@@ -773,7 +786,7 @@ class App extends ApiMain {
                         <td> ${item.con2} </td>
                         <td> ${item.con1} </td>
                         <td> ${item.swarpExrate} </td>
-                        <td> ${this.checkForAnHour(item.date) ? 'True' : 'False' } </td>
+                        <td> ${this.checkForAnHour(item.date) ? 'True' : `False (<a href="#" class="renewBtn" data-item-con1="${item.con2}" data-item-con2="${item.con1}"> Renew </a>)` } </td>
                         <td> <a href="#" class="btn btn-primary usenowBtn" 
                         data-item-con="${item.swarpCon}" 
                         data-item-con1="${item.con2}" 
@@ -796,6 +809,13 @@ class App extends ApiMain {
         .catch(err => this.handleError(err))
     }
 
+    /**
+     * When User Clicks On the Use Now Button 
+     * 
+     * This shows up on the User Convertion History
+     *  
+     * @param {Event} event 
+     */
     HandleuseNowClick(event) {
         // console.log('use now btn clicked', event.currentTarget.dataset);
         const data = event.currentTarget.dataset;
@@ -816,6 +836,27 @@ class App extends ApiMain {
 
     }
 
+    /**
+     * When User Clicks on the Renew Button
+     * 
+     * This shows up on the User Convertion History
+     * 
+     * @param {Event} event 
+     */
+    HandleRenewClick(event) {
+        const data = event.currentTarget.dataset;
+
+        const con1 = data.itemCon1;
+        const con2 = data.itemCon2;
+
+        this.getAndCalRate(con1, con2);
+    }
+
+    /**
+     * Offline Event Handler
+     * 
+     * @param {Event} event 
+     */
     handleOffline(event) {
         const mssg = 'Sorry, You are Offline. <br/> In Offline Mode, you only have access to currencies you have prevously selected';
     
