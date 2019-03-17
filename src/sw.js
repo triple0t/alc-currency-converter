@@ -1,7 +1,7 @@
 
 /* This acts has the cache name as well  */
 const app = 'the-currency-converter-app-';
-const version = '04'
+const version = '05'
 const appName = `${app + version}`;
 
  const path = (location.hostname === 'triple0t.github.io') ? '/alc-currency-converter/' : '/';

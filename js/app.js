@@ -43,6 +43,8 @@ var ApiMain = function () {
                 full: "ultra"
             }
         };
+
+        this.key = '944519a6c66369b2c89e';
     }
 
     /**
@@ -99,6 +101,7 @@ var ApiMain = function () {
     }, {
         key: 'request',
         value: function request(url) {
+            url = url.includes('&') ? url + ('&apiKey=' + this.key) : url + ('?apiKey=' + this.key);
             return fetch(url).then(function (res) {
                 return res.json();
             });

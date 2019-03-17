@@ -2,7 +2,7 @@
 
 /* This acts has the cache name as well  */
 var app = 'the-currency-converter-app-';
-var version = '04';
+var version = '05';
 var appName = '' + (app + version);
 
 var path = location.hostname === 'triple0t.github.io' ? '/alc-currency-converter/' : '/';

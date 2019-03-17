@@ -29,6 +29,8 @@ class ApiMain {
                 full: "ultra"
             }
         }
+        
+        this.key = '944519a6c66369b2c89e';
     }
 
     /**
@@ -71,6 +73,7 @@ class ApiMain {
     }
 
     request(url) {
+        url = (url.includes('&')) ? url + `&apiKey=${this.key}` : url + `?apiKey=${this.key}`;
         return fetch(url)
         .then(res => res.json());
     }

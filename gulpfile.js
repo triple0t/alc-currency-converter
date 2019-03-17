@@ -1,55 +1,69 @@
-var gulp = require("gulp");
-var babel = require("gulp-babel");
-var browserSync = require('browser-sync').create();
-var plumber = require('gulp-plumber');
+const { series, src, dest, watch } = require('gulp');
+const babel = require("gulp-babel");
+const browserSync = require('browser-sync').create();
+const plumber = require('gulp-plumber');
 
-var allTasks = ["libs", "copy-html", "js", "css", "other"];
 
-gulp.task('default', allTasks, function () {
-  console.log('done');
-});
+function serve() {
+  console.log('running serve');
 
+  browserSync.init({
+    server: ""
+  });
+
+  // watch("src/**/*.*", series(libs, copyHtml, js, css, other)).on('change', browserSync.reload);
+  // Do not copy the service worker file during dev.
+  watch("src/**/*.*", series(libs, copyHtml, js, css)).on('change', browserSync.reload);
+}
 
 // copy libs
-gulp.task('libs', function(){
-  return gulp.src('src/libs/*.*')
-    .pipe(gulp.dest('libs'))
-});
+function libs(){
+  console.log('running libs tasks');
 
-
+  return src('src/libs/*.*')
+    .pipe(dest('libs'))
+};
 
 // copy html files
-gulp.task('copy-html', function () {
-  return gulp.src([
+function copyHtml() {
+  console.log('running html tasks');
+
+  return src([
     'src/**/*.html',
   ])
-    .pipe(gulp.dest(''));
-});
+    .pipe(dest(__dirname));
+};
 
 // transpile to es5, copy to dist folder
-gulp.task('js', function() {
-  return gulp.src('src/js/**/*.js') 
+function js() {
+  console.log('running js tasks');
+
+  return src('src/js/**/*.js') 
       .pipe(plumber(function(err) {
         console.error('err with scripts', err);
         this.emit('end');
       }))                                    
       .pipe(babel())   
-      .pipe(gulp.dest('js'));               
-});
+      .pipe(dest('js'));           
+};
 
 // css files
-gulp.task('css', function() {
-  return gulp.src('src/css/**/*.css') 
+function css() {
+  console.log('running css tasks');
+
+  return src('src/css/**/*.css') 
       .pipe(plumber(function(err) {
         console.error('err with styles', err);
         this.emit('end');
       }))                                       
-      .pipe(gulp.dest('css'));               
-});
+      .pipe(dest('css'));               
+};
 
 // copy service worker file
-gulp.task('other', function(){
-  return gulp.src([
+function other(){
+  console.log('running other tasks');
+  
+  return src([
     'src/sw.js'
   ])
   .pipe(plumber(function(err) {
@@ -57,14 +71,8 @@ gulp.task('other', function(){
     this.emit('end');
   }))                                    
   .pipe(babel())  
-  .pipe(gulp.dest(''))
-});
+  .pipe(dest(__dirname))
+};
 
-// start the server
-gulp.task('serve', allTasks, function() {
-  browserSync.init({
-    server: ""
-  });
-
-  gulp.watch("src/**/*.*", ["copy-html", "js", "css", "other"]).on('change', browserSync.reload);
-});
+exports.serve = serve;
+exports.default = series(libs, copyHtml, js, css, other);
